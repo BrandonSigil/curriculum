@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Poodle Training Manual</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: a field notebook. One narrow working column, sticky tab bar, each skill a ladder of rungs. */
+:root{
+  --bg:#f2f5f0; --surface:#ffffff; --sunk:#e7ece5; --ink:#15231e; --muted:#586a62; --line:#d3dbd3;
+  --accent:#0d6a54; --on-accent:#ffffff; --hi:#d9ea4e; --on-hi:#15231e;
+  --good:#1b7848; --warn:#96600a; --bad:#b0382f;
+  --display:"Bricolage Grotesque","Figtree",system-ui,sans-serif;
+  --body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0f1714; --surface:#17221e; --sunk:#1f2c27; --ink:#e7efe9; --muted:#9bafa6; --line:#2c3b35;
+  --accent:#62d1af; --on-accent:#0f1714; --hi:#d9ea4e; --on-hi:#15231e;
+  --good:#6fd39a; --warn:#e6b455; --bad:#f08a80; color-scheme:dark } }
+:root[data-theme="dark"]{
+  --bg:#0f1714; --surface:#17221e; --sunk:#1f2c27; --ink:#e7efe9; --muted:#9bafa6; --line:#2c3b35;
+  --accent:#62d1af; --on-accent:#0f1714; --hi:#d9ea4e; --on-hi:#15231e;
+  --good:#6fd39a; --warn:#e6b455; --bad:#f08a80; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:760px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(1.9rem,6vw,2.7rem);font-weight:700;letter-spacing:-.02em}
+h2{font-size:1.45rem;font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.08rem;font-weight:700}
+p{margin:0}
+a{color:var(--accent)}
+button,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.label{font-size:.72rem;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.row > *{min-width:0}
+
+header.top{padding-block:28px 14px}
+header.top .stack{gap:10px}
+.namefield{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.92rem;color:var(--muted)}
+.namefield input{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 10px;width:11rem;max-width:100%}
+.sync{font-size:.8rem;color:var(--muted)}
+
+nav.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);border-bottom:1px solid var(--line)}
+nav.tabs .wrap{display:flex;gap:4px;overflow-x:auto}
+nav.tabs a{flex:none;padding:12px 12px;text-decoration:none;color:var(--muted);font-weight:600;font-size:.95rem;border-bottom:3px solid transparent}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--accent)}
+
+main{padding-block:22px 64px}
+section.view{display:flex;flex-direction:column;gap:22px}
+.lede{font-size:1.05rem;max-width:62ch}
+.prose{max-width:65ch}
+.prose p + p{margin-top:.8em}
+ul.plain,ol.plain{margin:0;padding-left:1.15em;display:flex;flex-direction:column;gap:6px;max-width:65ch}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;font-weight:600;cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.btn.small{padding:5px 10px;font-size:.88rem}
+.btn.hit{background:var(--hi);color:var(--on-hi);border-color:var(--hi);flex:1 1 130px;padding:16px;font-size:1.05rem}
+.btn.miss{flex:1 1 130px;padding:16px;font-size:1.05rem}
+
+/* week strip */
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{background:var(--sunk);border-radius:8px;padding:8px 2px;text-align:center;font-size:.75rem;color:var(--muted)}
+.day b{display:block;font-family:var(--display);font-size:1.15rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.day.on{background:var(--hi);color:var(--on-hi)} .day.on b{color:var(--on-hi)}
+.day.today{box-shadow:inset 0 0 0 2px var(--accent)}
+
+/* session cards */
+.session{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px}
+.session .head{display:flex;flex-wrap:wrap;gap:8px 12px;align-items:baseline;justify-content:space-between}
+.pill{display:inline-block;font-size:.75rem;font-weight:700;border-radius:99px;padding:2px 9px;background:var(--sunk);color:var(--muted);white-space:nowrap}
+.pill.done{background:var(--good);color:var(--surface)}
+.pass{border-top:1px dashed var(--line);padding-top:10px;font-size:.95rem}
+.runner{background:var(--sunk);border-radius:8px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.clock{font-family:var(--display);font-size:2.2rem;font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.tally{font-variant-numeric:tabular-nums;font-weight:600}
+.verdict{font-weight:600}
+.verdict.up{color:var(--good)} .verdict.hold{color:var(--warn)} .verdict.down{color:var(--bad)}
+
+.needs{display:flex;flex-direction:column;gap:2px}
+.needs label{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.needs label:last-child{border-bottom:0}
+.needs input{width:18px;height:18px;margin-top:3px;accent-color:var(--accent);flex:none}
+
+/* ladders */
+.track{border-top:2px solid var(--ink);padding-top:14px;display:flex;flex-direction:column;gap:12px}
+.track .head{display:flex;flex-wrap:wrap;gap:8px 12px;justify-content:space-between;align-items:baseline}
+.meter{display:flex;gap:3px}
+.meter i{width:16px;height:8px;border-radius:2px;background:var(--sunk)}
+.meter i.f{background:var(--accent)} .meter i.c{background:var(--hi);box-shadow:inset 0 0 0 1px var(--on-hi)}
+.rungs{display:flex;flex-direction:column;gap:6px}
+details.rung{background:var(--surface);border:1px solid var(--line);border-radius:8px}
+details.rung.cur{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+details.rung summary{cursor:pointer;padding:10px 12px;display:flex;gap:10px;align-items:baseline;list-style:none}
+details.rung summary::-webkit-details-marker{display:none}
+details.rung .n{font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted);flex:none;width:1.4em}
+details.rung.past .n{color:var(--good)}
+details.rung .t{font-weight:600;flex:1;min-width:0}
+details.rung .body{padding:0 12px 14px 12px;display:flex;flex-direction:column;gap:10px}
+.note{background:var(--sunk);border-radius:8px;padding:12px 14px;max-width:65ch}
+.note h3{margin-bottom:4px}
+
+.tablewrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:480px;font-size:.95rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+td.cue{font-family:var(--display);font-weight:700;white-space:nowrap}
+.script{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;white-space:pre-wrap;user-select:all;max-width:65ch}
+.refs{font-size:.9rem;color:var(--muted)}
+.refs li{overflow-wrap:anywhere}
+@media (prefers-reduced-motion:no-preference){.btn{transition:border-color .15s}}
+</style>
+
+<header class="top"><div class="wrap stack">
+  <span class="label">Standard poodle · age 3 · three short sessions a day</span>
+  <h1 id="title">Training Manual</h1>
+  <p class="lede">Four skills, taught in small rungs: settle on his bed from anywhere, stay quiet when someone knocks, wait to be greeted, and walk at your side. Work the three sessions on the Today tab and move up a rung only when he passes.</p>
+  <div class="namefield"><label for="dog-name">His name</label><input id="dog-name" type="text" maxlength="24" placeholder="Type his name" autocomplete="off"><span class="sync" id="sync"></span></div>
+</div></header>
+
+<nav class="tabs" aria-label="Sections"><div class="wrap">
+  <a href="#today">Today</a><a href="#skills">Skills</a><a href="#rules">House rules</a><a href="#evidence">Why this works</a>
+</div></nav>
+
+<main><div class="wrap">
+  <section class="view" id="v-today"></section>
+  <section class="view" id="v-skills" hidden></section>
+
+  <section class="view" id="v-rules" hidden>
+    <h2>House rules</h2>
+    <p class="lede">Two people train him, so the words and the rules have to match. A cue that means one thing with you and another with your partner means nothing to him.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Cue</th><th>What it means</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td class="cue">Yes</td><td>That exact thing earned a reward.</td><td>Say it the instant he gets it right, then deliver the treat. Never say it without paying.</td></tr>
+        <tr><td class="cue">Get cozy</td><td>Go to your bed, lie down, stay until released.</td><td>Say it once. The stay is built in, so there is no separate “stay”.</td></tr>
+        <tr><td class="cue">Free</td><td>You're done, do what you like.</td><td>The only way off the bed. If he leaves early, calmly walk him back; no reward for that rep.</td></tr>
+        <tr><td class="cue">Say hi</td><td>You may go and greet that person.</td><td>Given only when he is calm. Greeting people is the reward.</td></tr>
+        <tr><td class="cue">Heel</td><td>Walk at my left leg, shoulder by my knee.</td><td>Short stretches: crossing a road, passing people.</td></tr>
+        <tr><td class="cue">Let's go</td><td>Walk with me on a loose leash. Sniffing is fine, pulling isn't.</td><td>The default for most of a walk.</td></tr>
+        <tr><td class="cue">Go sniff</td><td>Off duty. Explore to the end of the leash.</td><td>Use it as a reward for good walking.</td></tr>
+        <tr><td class="cue">Touch</td><td>Bump your nose on my palm.</td><td>Moves him anywhere without pulling on the leash or collar.</td></tr>
+        <tr><td class="cue">Find it</td><td>Treats are scattered on the floor.</td><td>Your emergency tool for a surprise knock you aren't ready to train through.</td></tr>
+      </tbody>
+    </table></div>
+
+    <h3>How to run any session</h3>
+    <ol class="plain">
+      <li><b>Five reps, then decide.</b> Four or five right: make it slightly harder. Three: repeat as is. Two or fewer: make it easier. The tracker on the Today tab does this count for you.</li>
+      <li><b>Change one thing at a time.</b> Longer, or further away, or more distracting. When you raise one, drop the other two.</li>
+      <li><b>One cue, once.</b> If he doesn't respond, the step is too hard. Repeating the word teaches him the first one doesn't count.</li>
+      <li><b>Pay where you want him.</b> Bed treats go on the bed between his front paws. Heel treats arrive at your left trouser seam.</li>
+      <li><b>Stop while he still wants more.</b> Five minutes is plenty. End on a rep he got right.</li>
+      <li><b>Pea-sized treats.</b> Use part of his daily kibble for easy reps at home and chicken, cheese or liver for doors, guests and outdoors. Take the calories out of his dinner.</li>
+    </ol>
+
+    <h3>What “firm” means here</h3>
+    <ul class="plain">
+      <li>The rule is the same every day and with every person. He never gets greeted for rushing a guest, not even once by a visitor who “doesn't mind”.</li>
+      <li>You set up the house so he can't practise the old habit: leash on or gate closed before guests come in, treats by the door before the courier arrives.</li>
+      <li>Good things come through you: the door opens, the guest says hello, the walk moves forward, when he does the calm thing.</li>
+      <li>A mistake costs him the reward and nothing more. No leash pops, scruffing, shouting or pinning.</li>
+    </ul>
+
+    <h3>Text to send guests before they arrive</h3>
+    <div class="script" id="guest-script"></div>
+    <div class="row"><button class="btn small" id="copy-script" type="button">Copy text</button><span class="muted" id="copy-note" aria-live="polite"></span></div>
+  </section>
+
+  <section class="view" id="v-evidence" hidden>
+    <h2>Why this works</h2>
+    <div class="prose">
+      <p>You said you're fine with being firm and establishing yourselves as the alphas, as long as it's what the research supports. The research supports the firm part and not the alpha part.</p>
+      <p><b>The alpha idea came from captive wolves and was withdrawn by the scientist who popularised it.</b> Early studies watched unrelated wolves forced together in enclosures. Wild packs turned out to be families led by parents, and David Mech, whose 1970 book spread the term, has spent decades correcting it. Studies of dogs find that “dominance” describes specific relationships over specific resources. It does not explain barking at the door, crowding guests or pulling on a leash. A dog does those things because they have worked for him.</p>
+      <p><b>Methods built on intimidation perform no better and carry real costs.</b> Reviews and controlled studies find that dogs trained with leash corrections, shouting or physical confrontation show more stress behaviours, higher cortisol and a more pessimistic outlook, and owners who use confrontational techniques report more aggressive responses. Where reward-based and aversive methods have been compared directly, the reward-based groups learned at least as well. That is why the American Veterinary Society of Animal Behavior recommends reward-based methods for all training and behaviour problems.</p>
+      <p><b>What does work is controlling consequences.</b> Behaviour that pays gets repeated; behaviour that stops paying fades. Every rung in this manual does three things: prevents the old habit from paying, teaches a replacement he can't do at the same time (a dog lying on his bed can't be at the door), and pays that replacement heavily until it is his default.</p>
+    </div>
+
+    <div class="note">
+      <h3>About the slip collar</h3>
+      <p>You've already seen that it doesn't stop him. A dog pulling into a slip lead isn't learning anything, and sustained pressure on the neck raises pressure inside the eye and loads the windpipe. Walk him on a well-fitted Y-front harness with a front chest clip. It doesn't train him by itself either, but it turns him slightly toward you when he pulls and takes his throat out of it while the Heel ladder does the teaching.</p>
+    </div>
+    <div class="note">
+      <h3>Exercise comes first</h3>
+      <p>Under 30 minutes a day is low for a three-year-old standard poodle, an athletic retrieving breed. Most adult standards need an hour or more of activity, some of it real running, plus work for their brain. A dog with unspent energy finds settling on a bed much harder. Building this up will likely help every skill here more than any single exercise.</p>
+    </div>
+    <div class="note">
+      <h3>How long this takes</h3>
+      <p>With daily practice, expect a reliable “get cozy” from other rooms in roughly four to six weeks, calm door and guest routines in six to ten, and a dependable loose leash in two to three months. Those are typical ranges, not promises. He is three, so the old habits have had years of practice.</p>
+    </div>
+    <div class="note">
+      <h3>When to call a professional</h3>
+      <p>Everything here assumes what you described: friendly and over-excited. If you ever see stiffening, growling, a hard stare, snapping, or him hiding from visitors, stop the guest exercises and book a certified behaviour consultant or a veterinary behaviourist. See your vet too if the barking or restlessness is new.</p>
+    </div>
+
+    <h3>Sources</h3>
+    <ul class="plain refs">
+      <li>American Veterinary Society of Animal Behavior (2021). Position Statement on Humane Dog Training.</li>
+      <li>American Veterinary Society of Animal Behavior (2008). Position Statement on the Use of Dominance Theory in Behavior Modification of Animals.</li>
+      <li>Ziv, G. (2017). The effects of using aversive training methods in dogs: a review. Journal of Veterinary Behavior, 19, 50–60.</li>
+      <li>Vieira de Castro, A. C., et al. (2020). Does training method matter? Evidence for the negative impact of aversive-based methods on companion dog welfare. PLOS ONE, 15(12).</li>
+      <li>China, L., Mills, D. S., &amp; Cooper, J. J. (2020). Efficacy of dog training with and without remote electronic collars vs. a focus on positive reinforcement. Frontiers in Veterinary Science, 7, 508.</li>
+      <li>Herron, M. E., Shofer, F. S., &amp; Reisner, I. R. (2009). Survey of the use and outcome of confrontational and non-confrontational training methods in client-owned dogs showing undesired behaviors. Applied Animal Behaviour Science, 117, 47–54.</li>
+      <li>Hiby, E. F., Rooney, N. J., &amp; Bradshaw, J. W. S. (2004). Dog training methods: their use, effectiveness and interaction with behaviour and welfare. Animal Welfare, 13, 63–69.</li>
+      <li>Bradshaw, J. W. S., Blackwell, E. J., &amp; Casey, R. A. (2009). Dominance in domestic dogs: useful construct or bad habit? Journal of Veterinary Behavior, 4, 135–144.</li>
+      <li>Mech, L. D. (1999). Alpha status, dominance, and division of labor in wolf packs. Canadian Journal of Zoology, 77, 1196–1203.</li>
+      <li>Pauli, A. M., et al. (2006). Effects of the application of neck pressure by a collar or harness on intraocular pressure in dogs. Journal of the American Animal Hospital Association, 42, 207–211.</li>
+      <li>Overall, K. L. (1997). Protocol for relaxation, in Clinical Behavioral Medicine for Small Animals. The model for the mat work in the Get cozy ladder.</li>
+    </ul>
+  </section>
+</div></main>
+
+<script>
+/* ---------- content ---------- */
+const TRACKS = [
+{ id:'found', name:'Foundations', mins:5, blurb:'Four small tools every other skill uses. He knows sit and little else, so start here. A few days is usually enough.',
+  levels:[
+  { t:'“Yes” means a treat is coming', steps:['Sit with 15 small treats. Say “Yes”, then hand him one. He doesn\'t have to do anything.','Keep your hands still until after the word, so the word predicts the food and your hand doesn\'t.','Two or three short rounds across the day.'],
+    pass:'You say “Yes” while he is looking away and his head snaps round to you. Count that as a rep.' },
+  { t:'Name means look at me', steps:['Say his name once in a happy voice. The moment his eyes meet yours: “Yes”, treat.','If he doesn\'t look, make a kissy noise, pay the look, and try again somewhere quieter.','Practise in each room, then in the yard.'],
+    pass:'He looks within two seconds, 4 of 5 times, with a mild distraction such as the TV on or someone walking past.' },
+  { t:'“Free” is the release word', steps:['Ask for a sit. Count one second. Say “Free” and toss a treat a metre away so he gets up to fetch it.','Stretch the pause: 2, 3, 5 seconds. Say the word first, then move your arm.','If he gets up before the word, no treat. Reset and ask for a shorter wait.'],
+    pass:'He holds a 5-second sit and moves only on the word, 4 of 5 times.' },
+  { t:'“Touch” (nose to palm)', steps:['Hold your open palm a few centimetres from his nose. When he sniffs or bumps it: “Yes”, treat from the other hand.','Once he is bumping it on purpose, say “Touch” just before you present the hand.','Move the hand: left, right, low, one step away, two metres away.'],
+    pass:'He crosses two metres to bump your palm on the cue, 4 of 5 times.' }
+]},
+{ id:'cozy', name:'Get cozy', mins:5, start:1, blurb:'The keystone. Quiet at the door and polite with guests are both this skill done under pressure, so it gets a session every day. He already goes to the bed when you are next to it and then pops up, so the missing pieces are a release word and duration.',
+  stuck:['He keeps popping up: you are waiting too long between treats. Halve the time and feed on the bed before he moves.','He stands or sits and won\'t lie down: wait silently, or lure a down once or twice with a treat to the floor between his paws.','He leaves when you walk away: return to him and pay sooner, and go back one rung for a day.'],
+  levels:[
+  { t:'The bed is where treats happen', steps:['Stand beside the bed and say nothing. When any paw lands on it: “Yes”, and put the treat on the bed.','Toss one treat off the bed to reset him, then wait again.','After a few reps wait for more: all four paws, then a sit, then a down. Pay a down with three treats in a row, placed between his front paws.'],
+    pass:'When you stand by the bed he walks on and lies down without a point or a lure, 4 of 5 times.' },
+  { t:'Add the cue and the release', steps:['Say “Get cozy” once, just as he is about to step on. Treat between his paws when he lies down.','Feed a second treat two seconds later while he is still down, then say “Free” and toss a treat off the bed.','He should learn that treats come while he stays down and stop when he is released. If he gets up early, lead him back with “Touch” and skip the treat.'],
+    pass:'From one step away he goes on the cue and stays down for 5 seconds until “Free”, 4 of 5 times.' },
+  { t:'Stay longer', steps:['Stand next to the bed. Feed at 3 seconds, then 8, then 5, then 15, then 10. Mix short and long so he can\'t predict it.','Work toward 30 seconds, then a minute. Deliver treats slowly and low, and keep your voice quiet. Calm in, calm out.','Sit in a chair nearby and repeat. Give him a chew on the bed for the longer rounds.'],
+    pass:'One minute with you standing beside him and two minutes with you sitting nearby, with only two or three treats.' },
+  { t:'Stay while I move', steps:['Cue the bed, then take one step back and return to feed him. Always walk back to him to pay; he should not come to you.','Add in turn: a step sideways, turning your back, a full circle around the bed, walking to the doorway.','Step out of sight for one second, then three, then ten. Keep the time short whenever you add movement.'],
+    pass:'You leave the room for 10 seconds and come back to find him still lying down, 4 of 5 times.' },
+  { t:'Send him from a distance', steps:['Stand one step from the bed, cue, pay on the bed, release.','Add one step each time he gets it right. If he hesitates, go back two steps.','Vary your angle so he is finding the bed and not following your pointing arm. Keep your hands still.'],
+    pass:'From across the room he goes straight to the bed and lies down on one cue, 4 of 5 times.' },
+  { t:'From other rooms', steps:['Stand just outside the room where the bed is and cue him. For the first few, jog there with him and make it a race.','Move further away: the hallway, the kitchen, upstairs.','Follow him in to pay on the bed, a little later each time so he waits there for you.'],
+    pass:'Sent from three different rooms, he goes and is lying on the bed when you walk in.' },
+  { t:'With distractions', steps:['With him on the bed, add one at a time: drop a toy, bounce a ball, clap, open the fridge, sit down with food.','Pay him the instant he stays put through each one. If he gets up, the distraction was too big. Do a smaller version.','Have your partner walk through, then jog through, then open and close the front door.'],
+    pass:'He stays down through five different distractions in one session.' },
+  { t:'Real life', steps:['Use it every day: during your dinner with a chew, while you unload groceries, while you answer the door.','Shift from treats to real-life rewards: “Free” to go outside, to greet someone, to get his meal.','Still pay with food at random, about one rep in four. Surprise jackpots keep the habit strong.'],
+    pass:'He stays on the bed through a 20-minute meal and goes there from anywhere in the house on one cue.' }
+]},
+{ id:'door', name:'Quiet at the door', mins:5, blurb:'The goal is that a knock sends him to his bed. One or two alert barks on the way are fine; that is a dog telling you someone is there. You get daily knocks and can recruit helpers, which is ideal: lots of real practice.',
+  manage:'Until he reaches rung 5, don\'t try to train through real deliveries. Keep a jar of treats near the door. When a real knock comes, say “Find it” and scatter a handful on or near his bed, then deal with the door. Sniffing lowers arousal and he can\'t bark with his nose in the carpet. A “please don\'t knock, leave parcels here” note helps too.',
+  stuck:['He barks at even a soft knock: use a recording on your phone at low volume and feed straight after each sound until he looks at you instead.','He runs to the door, then to the bed: fine. Pay the bed. The door run will fade because it earns nothing.','He is too excited to eat: the step is too hard. Make the sound quieter and move further from the door.'],
+  levels:[
+  { t:'A knock predicts food', steps:['With him near you, knock softly once on a table. Immediately feed a great treat, whatever he does.','Repeat 10 times with pauses of varying length. If he barks, knock more softly next time.','You are changing how the sound feels to him before you ask him to do anything.'],
+    pass:'At a soft knock he turns to you looking for food instead of orienting to the door, 4 of 5 times.' },
+  { t:'Knock, then “Get cozy”', steps:['Needs Get cozy rung 5. Knock softly on a table, say “Get cozy”, and pay well on the bed.','After five reps, knock and wait three seconds before giving the cue. He will start to beat you to it.','When he goes on the knock alone, give him a jackpot of five treats, one after another.'],
+    pass:'A soft knock with no word from you sends him to the bed, 4 of 5 times.' },
+  { t:'Your own front door', steps:['Knock softly on the inside of the front door. Pay the bed.','Build to a normal knock, then a loud one. Add the doorbell as a separate sound, starting again from soft if you can (a recording works).','If he barks more than twice, the last step was too big. Return to the volume where he succeeded.'],
+    pass:'A full-volume knock from you on the real door sends him to the bed, 4 of 5 times.' },
+  { t:'Helper knocks from outside', steps:['Text your helper when to knock so you are ready with treats. Start with one soft knock.','He goes to the bed, you pay there. The door stays shut. The helper waits 30 seconds and knocks again.','Build up to a normal knock and then the bell.'],
+    pass:'A real knock from outside sends him to the bed with no more than two barks, 4 of 5 times.' },
+  { t:'The door opens', steps:['After the knock and the trip to the bed, walk toward the door and come back to pay him. Then touch the handle and come back. Then open it a crack.','If he gets up, close the door and send him back. The door only opens while he is on the bed.','Work up to a fully open door with the helper standing silently outside.'],
+    pass:'He stays on the bed while you open the door wide for 10 seconds, 4 of 5 times.' },
+  { t:'Someone steps in', steps:['The helper steps inside, you chat for 10 seconds, the helper leaves. Walk back and pay him on the bed.','Add the things real couriers do: a parcel handed over, a cheerful voice, a clipboard.','Then lengthen the chat to a minute.'],
+    pass:'He stays on the bed through a one-minute doorstep conversation.' },
+  { t:'Real deliveries', steps:['Keep the treat jar by the door. For every real knock: he goes to the bed, you answer, you return and pay.','On days you can\'t train, go back to the “Find it” scatter instead of letting the old routine run.','Fade food slowly. A real knock is the hardest version, so keep paying for it for months.'],
+    pass:'For a week of real knocks he goes to the bed with two barks or fewer.' }
+]},
+{ id:'guests', name:'Polite with guests', mins:5, blurb:'He is friendly and over-excited, so meeting people is the reward he wants most. The rule becomes: people come to him, on his bed, when he is calm. Rushing over makes them go still and turn away.',
+  manage:'Before any guest walks in, clip a leash on him or close a gate. The leash is a seatbelt: it stops him rehearsing the rush, and you never pull on it. Send the guest text from the House rules tab so visitors know to ignore him until you say so.',
+  stuck:['He launches off the bed when the guest moves: the guest freezes and looks away, you guide him back, and the guest tries again more slowly.','He can\'t settle at all: give him a stuffed chew toy on the bed, and get him some exercise before guests are due.','A guest fusses over him anyway: step in and move him away. One paid rush undoes a lot of practice.'],
+  levels:[
+  { t:'Calm brings people to him', steps:['Needs Get cozy rung 3. With him on the bed, walk toward him. If he stays down, crouch and stroke him slowly for three seconds.','If he pops up, stop, turn away and step back. Try again when he is down.','Both of you practise this until approaching him is boring.'],
+    pass:'Either of you can walk up and pet him on the bed without him getting up, 4 of 5 times.' },
+  { t:'“Say hi” and come back', steps:['With him on the bed and a family member across the room, say “Say hi”. He goes over and gets a calm five-second hello.','Then call “Get cozy” and pay well on the bed. This teaches that a greeting has an end.','Repeat until he turns back to the bed quickly.'],
+    pass:'He greets on cue and returns to the bed on one cue, 4 of 5 times.' },
+  { t:'A familiar helper visits', steps:['Leash on. A helper he knows comes in, ignores him and sits down. You send him to the bed and pay calm behaviour every few seconds at first.','When he has been settled for 30 seconds, the helper walks over slowly and greets him at the bed.','If he gets up, the helper stops and turns away. Calm brings them back.'],
+    pass:'He stays on the bed from the helper\'s entry until the helper comes over to him, 4 of 5 times.' },
+  { t:'A less familiar or more exciting guest', steps:['Repeat rung 3 with someone he sees rarely. Then with a livelier entrance: talking, bags, a coat coming off.','Pay more often at first, then thin it out as he settles.','End each rep with the guest coming to him, or with “Say hi” if he is fully relaxed.'],
+    pass:'He stays on the bed through a noisy entrance from someone he doesn\'t know well.' },
+  { t:'Longer visits', steps:['Guests arrive and sit. He stays on the bed with a chew for five minutes, then ten.','Release him with “Free” to mingle once he is properly calm. If he revs up again, send him back to the bed for a minute.','Guests pet him only while all four paws are on the floor and he is relaxed.'],
+    pass:'He settles for ten minutes after guests arrive, then mingles without crowding anyone.' },
+  { t:'Leash off, real guests', steps:['Start with leash-off practice with helpers, then with expected visitors.','Keep the leash by the door for bigger gatherings. Using it on a hard day is good management.','Reward the routine for life with the thing he wants: a calm hello.'],
+    pass:'Three real visits in a row where he waits on the bed to be greeted.' }
+]},
+{ id:'heel', name:'Heel and loose leash', mins:10, blurb:'Two different jobs. “Heel” is a precise position for short stretches. “Let\'s go” is a loose leash for the rest of the walk. Pulling works for him right now, since it gets him where he wants to go, so the rule changes: a tight leash stops the walk and a slack one moves it.',
+  manage:'Swap the slip collar for a Y-front harness with a chest clip before you start; the reasons are on the Why this works tab. Do the first rungs indoors with no leash. On real walks, train for the first ten minutes and expect less for the rest.',
+  stuck:['He surges ahead after every treat: feed at your seam with your left hand and take the next step before he has finished chewing.','He hits the end of the leash constantly outside: the place is too exciting for this rung. Train on your driveway and use “Go sniff” often.','He ignores food outdoors: bring better food, walk after some exercise, and move further from whatever has his attention.'],
+  levels:[
+  { t:'Your left side pays', steps:['Indoors, no leash, treats in your left hand or a pouch. Whenever he is beside your left leg: “Yes”, and feed with your hand against your trouser seam.','Take one step. If he comes along, feed at the seam. Wander the room and pay every time he lines up.','Feed low enough that he doesn\'t jump for it.'],
+    pass:'As you walk around the room he keeps putting himself at your left side.' },
+  { t:'Count the steps', steps:['One step, treat. Two steps, treat. Three steps, treat, and so on up to ten.','If he drifts off before you reach the number, go back to one step. No scolding.','When he reaches five steps reliably, say “Heel” as you set off.'],
+    pass:'Ten steps at your side on the cue “Heel”, 4 of 5 times.' },
+  { t:'Leash on, turns and pace', steps:['Clip the leash to the harness and hold it so it hangs in a loose curve. Repeat rung 2 indoors.','Add right turns, left turns, about-turns, slow and fast walking. Treat just after each turn.','Stop now and then. Pay him for stopping with you.'],
+    pass:'Twenty steps with two turns and the leash slack throughout.' },
+  { t:'Take it outside, somewhere dull', steps:['Driveway, yard or a quiet hallway. Go back to paying every two or three steps, because outdoors is a harder room.','Do a minute of heel, then “Go sniff” for a minute. Repeat five times.','Sniffing is a reward he values. Use it.'],
+    pass:'Twenty steps at heel outside with the leash slack, 4 of 5 times.' },
+  { t:'Loose-leash rules on a real walk', steps:['Say “Let\'s go” and walk. The instant the leash goes tight, stop and stand still. When he slackens it or looks back: “Yes”, and walk on.','If he pulls again straight away, turn and go the other way for a few steps.','Pay him with food at your side every time he checks in without being asked.'],
+    pass:'Ten minutes on a quiet street with fewer than five stops.' },
+  { t:'Heel on a quiet street', steps:['Ask for “Heel” for 20 steps, pay, then release to “Go sniff”.','Build to 30 steps and then 50, paying at random points along the way.','Use it for something real: crossing a road, passing a driveway.'],
+    pass:'Fifty steps at heel on a quiet street, 4 of 5 times.' },
+  { t:'Past people and dogs', steps:['Start at a distance where he notices them but will still eat. Ask for “Heel” and pay every two steps as you pass.','Shrink the distance over many walks. If he lunges or can\'t take food, you are too close; move away and try further back.','Pay any glance at a distraction followed by a look back at you.'],
+    pass:'He holds heel past a person or dog on the other side of the street, 4 of 5 times.' },
+  { t:'Whole walks', steps:['Loose leash is the default for the whole walk. Heel is for a block at a time, on cue.','Food becomes occasional. Most rewards are forward movement and “Go sniff”.','Each of you walks him by the same rules. A walk where pulling works sets the others back.'],
+    pass:'A 30-minute walk with the leash slack almost all the way.' }
+]}];
+
+const NEEDS = [
+  ['move','45 to 60 minutes of real exercise, some of it running: fetch, a flirt pole, a jog, play with a dog friend. He currently gets under 30.'],
+  ['sniff','One slow walk or 10 minutes where his nose is in charge.'],
+  ['brain','One meal from a puzzle feeder, a stuffed toy, or scattered in the grass.'],
+  ['calm','Caught him being calm five times and quietly dropped a treat between his paws.']
+];
+const T = Object.fromEntries(TRACKS.map(t=>[t.id,t]));
+
+/* ---------- state ---------- */
+const KEY='pup-manual-v1';
+let S = { name:'', levels:{found:0,cozy:1,door:0,guests:0,heel:0}, log:[], needs:{}, updated:0 };
+let run = null;          // session in progress (this device only)
+let dbDoc = null, writing = false, dirty = false;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const dkey = (d=new Date()) => d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const pup = () => S.name.trim() || 'your dog';
+
+function adopt(d){
+  if(!d || typeof d!=='object') return;
+  S = { name: typeof d.name==='string'? d.name : '',
+        levels: Object.assign({found:0,cozy:1,door:0,guests:0,heel:0}, d.levels||{}),
+        log: Array.isArray(d.log)? d.log.slice(-300) : [],
+        needs: d.needs && typeof d.needs==='object'? JSON.parse(JSON.stringify(d.needs)) : {},
+        updated: d.updated||0 };
+}
+function setSync(mode){ $('sync').textContent = mode==='shared' ? 'Progress is shared with everyone who can open this page.' : 'Progress is saved in this browser only.'; }
+async function push(){
+  if(!dbDoc) return;
+  if(writing){ dirty = true; return; }
+  writing = true;
+  try { await dbDoc.set(JSON.parse(JSON.stringify(S))); setSync('shared'); }
+  catch(e){ setSync('local'); }
+  writing = false;
+  if(dirty){ dirty = false; push(); }
+}
+function save(){
+  S.updated = Date.now();
+  const cut = dkey(new Date(Date.now()-21*864e5));
+  for(const k of Object.keys(S.needs)) if(k < cut) delete S.needs[k];
+  S.log = S.log.slice(-300);
+  try { localStorage.setItem(KEY, JSON.stringify(S)); } catch(e){}
+  push();
+}
+
+/* ---------- planning ---------- */
+const lvl = id => Math.min(S.levels[id]||0, T[id].levels.length);
+const graduated = id => lvl(id) >= T[id].levels.length;
+function plan(){
+  const a = [];
+  if(!graduated('found')) a.push('found');
+  a.push('cozy','heel');
+  if(a.length < 3){
+    const day = Math.floor(Date.now()/864e5);
+    const guestsReady = lvl('cozy') >= 2;
+    a.push(guestsReady && day%2 ? 'guests' : 'door');
+  }
+  return a;
+}
+function sessionsOn(key){ return S.log.filter(e=>e.d===key); }
+function verdict(hit, miss){
+  const n = hit+miss;
+  if(n < 5) return ['hold','Fewer than five reps counted. Run it again before you change anything.'];
+  const r = hit/n;
+  if(r >= .8) return ['up','He passed this round. Make it a little harder next time, or move up if he has met the pass mark.'];
+  if(r >= .6) return ['hold','Close. Repeat this rung as it is.'];
+  return ['down','Too hard today. Make it easier: shorter, closer or quieter. Step back a rung if that doesn\'t help.'];
+}
+
+/* ---------- rendering ---------- */
+function rungHTML(tr, i){
+  const L = tr.levels[i];
+  return `<ol class="plain">${L.steps.map(s=>`<li>${s}</li>`).join('')}</ol><p class="pass"><b>Pass mark:</b> ${L.pass}</p>`;
+}
+function sessionCard(id){
+  const tr = T[id], i = lvl(id), done = sessionsOn(dkey()).filter(e=>e.t===id).length;
+  const head = `<div class="head"><div><span class="label">${tr.mins} minutes</span><h3>${tr.name}</h3></div>
+    <span class="pill ${done?'done':''}">${done? 'Done today'+(done>1?' ×'+done:'') : (graduated(id)?'Maintenance':'Rung '+(i+1)+' of '+tr.levels.length)}</span></div>`;
+  if(graduated(id)) return `<article class="session">${head}<p>He has finished this ladder. Keep it sharp with a few reps in real life and pay him at random.</p>
+    <div class="row"><button class="btn small" data-act="log" data-t="${id}">Log a practice</button></div></article>`;
+  let body = `<p><b>${tr.levels[i].t}</b></p>${rungHTML(tr,i)}`;
+  if(run && run.t===id){
+    const v = run.ended ? verdict(run.hit, run.miss) : null;
+    body += `<div class="runner">
+      <div class="row" style="justify-content:space-between"><span class="clock" id="clock">${clockText()}</span><span class="tally">${run.hit} right · ${run.miss} missed</span></div>
+      ${run.ended ? `<p class="verdict ${v[0]}">${v[1]}</p>
+        <div class="row"><button class="btn primary" data-act="keep" data-t="${id}">Save, stay on this rung</button>
+        <button class="btn" data-act="up" data-t="${id}">Save and move up</button>
+        ${i>0?`<button class="btn" data-act="down" data-t="${id}">Save and step back</button>`:''}</div>`
+      : `<div class="row"><button class="btn hit" data-act="hit">Got it</button><button class="btn miss" data-act="miss">Missed</button></div>
+        <div class="row"><button class="btn small" data-act="end">Finish session</button><button class="btn small" data-act="cancel">Discard</button></div>`}
+    </div>`;
+  } else {
+    body += `<div class="row"><button class="btn primary" data-act="start" data-t="${id}" ${run?'disabled':''}>Start ${tr.mins}-minute session</button></div>`;
+  }
+  return `<article class="session">${head}${body}</article>`;
+}
+function clockText(){
+  if(!run) return '';
+  const left = Math.max(0, run.len - Math.floor(((run.ended||Date.now()) - run.at)/1000));
+  return Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
+}
+function renderToday(){
+  const today = dkey(), names = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  let week = '';
+  for(let k=6;k>=0;k--){
+    const d = new Date(Date.now()-k*864e5), n = sessionsOn(dkey(d)).length;
+    week += `<div class="day ${n?'on':''} ${k===0?'today':''}">${names[d.getDay()]}<b>${n}</b></div>`;
+  }
+  const total7 = [...Array(7)].reduce((s,_,k)=>s+sessionsOn(dkey(new Date(Date.now()-k*864e5))).length,0);
+  const nd = S.needs[today]||{};
+  $('v-today').innerHTML = `
+    <div class="stack"><h2>Today with ${esc(pup())}</h2>
+    <p class="lede">Three short sessions, spread through the day. Tap “Got it” or “Missed” after each rep and the page tells you whether to move up, repeat or ease off.</p></div>
+    <div class="stack" style="gap:8px"><span class="label">Sessions in the last 7 days: ${total7}</span><div class="week">${week}</div></div>
+    ${plan().map(sessionCard).join('')}
+    <div class="stack" style="gap:6px"><h3>Daily needs</h3>
+    <p class="muted">These aren't training, but the training leans on them. A tired, satisfied poodle can lie on a bed.</p>
+    <div class="needs">${NEEDS.map(([k,txt])=>`<label><input type="checkbox" id="need-${k}" data-need="${k}" ${nd[k]?'checked':''}><span>${txt}</span></label>`).join('')}</div></div>`;
+}
+function renderSkills(){
+  $('v-skills').innerHTML = `<div class="stack"><h2>The skill ladders</h2>
+    <p class="lede">Each skill is a ladder. The highlighted rung is where ${esc(pup())} is now. Move up after he meets the pass mark in two sessions running, and step back whenever a rung falls apart. Going back a rung is normal and quick.</p></div>` +
+  TRACKS.map(tr=>{
+    const i = lvl(tr.id);
+    return `<div class="track" id="t-${tr.id}">
+      <div class="head"><h3>${tr.name}</h3><div class="meter" aria-label="Rung ${Math.min(i+1,tr.levels.length)} of ${tr.levels.length}">${tr.levels.map((_,k)=>`<i class="${k<i?'f':k===i?'c':''}"></i>`).join('')}</div></div>
+      <p class="prose">${tr.blurb}</p>
+      ${tr.manage?`<div class="note"><h3>Until he has learned it</h3><p>${tr.manage}</p></div>`:''}
+      <div class="rungs">${tr.levels.map((L,k)=>`<details class="rung ${k===i?'cur':k<i?'past':''}" ${k===i?'open':''}>
+        <summary><span class="n">${k<i?'✓':k+1}</span><span class="t">${L.t}</span>${k===i?'<span class="pill">Current</span>':''}</summary>
+        <div class="body">${rungHTML(tr,k)}${k!==i?`<div class="row"><button class="btn small" data-act="set" data-t="${tr.id}" data-l="${k}">Make this the current rung</button></div>`:''}</div></details>`).join('')}</div>
+      ${tr.stuck?`<details class="rung"><summary><span class="n">?</span><span class="t">If it isn't working</span></summary><div class="body"><ul class="plain">${tr.stuck.map(s=>`<li>${s}</li>`).join('')}</ul></div></details>`:''}
+    </div>`; }).join('');
+}
+function guestScript(){
+  const n = S.name.trim() || 'our dog';
+  return `Quick favour before you come over: we're teaching ${n} to stay calm when people arrive.\n\nWhen you come in, please ignore him completely. No eye contact, no talking to him, no petting, even if he looks adorable. He'll be on his bed.\n\nOnce he's settled I'll tell you, and then you can walk over and say hello to him there. If he jumps up or rushes at you, just stand still and look away until he backs off.\n\nThank you, it really helps!`;
+}
+function renderAll(){
+  $('title').textContent = (S.name.trim()? S.name.trim()+'’s ' : '') + 'Training Manual';
+  if(document.activeElement !== $('dog-name')) $('dog-name').value = S.name;
+  $('guest-script').textContent = guestScript();
+  renderToday(); renderSkills();
+}
+
+/* ---------- actions ---------- */
+let tick = null;
+function stopTick(){ if(tick){ clearInterval(tick); tick = null; } }
+function logSession(id, hit, miss){ S.log.push({d:dkey(), t:id, l:lvl(id), hit, miss}); }
+document.addEventListener('click', e=>{
+  const b = e.target.closest('[data-act]'); if(!b) return;
+  const a = b.dataset.act, id = b.dataset.t;
+  if(a==='start'){ run = {t:id, at:Date.now(), len:T[id].mins*60, hit:0, miss:0, ended:0};
+    stopTick(); tick = setInterval(()=>{ const c=$('clock'); if(c) c.textContent = clockText(); }, 1000); }
+  else if(a==='hit' && run) run.hit++;
+  else if(a==='miss' && run) run.miss++;
+  else if(a==='end' && run){ run.ended = Date.now(); stopTick(); }
+  else if(a==='cancel'){ run = null; stopTick(); }
+  else if(a==='keep'||a==='up'||a==='down'){
+    logSession(id, run.hit, run.miss);
+    if(a==='up') S.levels[id] = Math.min(lvl(id)+1, T[id].levels.length);
+    if(a==='down') S.levels[id] = Math.max(lvl(id)-1, 0);
+    run = null; save(); }
+  else if(a==='log'){ logSession(id, 0, 0); save(); }
+  else if(a==='set'){ S.levels[id] = +b.dataset.l; save(); }
+  renderAll();
+});
+document.addEventListener('change', e=>{
+  const k = e.target.dataset && e.target.dataset.need; if(!k) return;
+  const t = dkey(); S.needs[t] = Object.assign({}, S.needs[t]); S.needs[t][k] = e.target.checked; save();
+});
+let nameTimer = null;
+$('dog-name').addEventListener('input', e=>{
+  S.name = e.target.value; clearTimeout(nameTimer);
+  $('title').textContent = (S.name.trim()? S.name.trim()+'’s ' : '') + 'Training Manual';
+  nameTimer = setTimeout(()=>{ save(); renderAll(); }, 700);
+});
+$('copy-script').addEventListener('click', ()=>{
+  const done = ok => { $('copy-note').textContent = ok ? 'Copied.' : 'Select the text above and copy it.'; };
+  try { navigator.clipboard.writeText(guestScript()).then(()=>done(true), ()=>done(false)); } catch(err){ done(false); }
+});
+
+/* ---------- tabs ---------- */
+const VIEWS = ['today','skills','rules','evidence'];
+function route(){
+  const h = location.hash.slice(1), v = VIEWS.includes(h) ? h : 'today';
+  VIEWS.forEach(x => { $('v-'+x).hidden = x!==v; });
+  document.querySelectorAll('nav.tabs a').forEach(a => a.getAttribute('href')==='#'+v ? a.setAttribute('aria-current','page') : a.removeAttribute('aria-current'));
+}
+addEventListener('hashchange', ()=>{ route(); scrollTo(0,0); });
+
+/* ---------- boot ---------- */
+try { adopt(JSON.parse(localStorage.getItem(KEY)||'null')); } catch(e){}
+setSync('local'); route(); renderAll();
+if(window.claude && window.claude.use){
+  window.claude.use('db').then(db=>{
+    if(!db) return;
+    dbDoc = db.doc('pup/main');
+    dbDoc.onSnapshot(snap=>{
+      if(snap.metadata.hasPendingWrites || writing) return;
+      setSync('shared');
+      if(!snap.exists) return;
+      const d = snap.data();
+      if((d.updated||0) > (S.updated||0)){ adopt(d); try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} renderAll(); }
+    }, ()=>{ dbDoc = null; setSync('local'); });
+  }).catch(()=>{});
+}
+</script>
+</body>
+</html>
