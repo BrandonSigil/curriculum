@@ -126,7 +126,7 @@ td.cue{font-family:var(--display);font-weight:700;white-space:nowrap}
 
 <header class="top"><div class="wrap stack">
   <span class="label">Standard poodle · age 3 · three short sessions a day</span>
-  <h1 id="title">Training Manual</h1>
+  <h1 id="title">Leo’s Training Manual</h1>
   <p class="lede">Four skills, taught in small rungs: settle on his bed from anywhere, stay quiet when someone knocks, wait to be greeted, and walk at your side. Work the three sessions on the Today tab and move up a rung only when he passes.</p>
   <div class="namefield"><label for="dog-name">His name</label><input id="dog-name" type="text" maxlength="24" placeholder="Type his name" autocomplete="off"><span class="sync" id="sync"></span></div>
 </div></header>
@@ -325,7 +325,7 @@ const T = Object.fromEntries(TRACKS.map(t=>[t.id,t]));
 
 /* ---------- state ---------- */
 const KEY='pup-manual-v1';
-let S = { name:'', levels:{found:0,cozy:1,door:0,guests:0,heel:0}, log:[], needs:{}, updated:0 };
+let S = { name:'Leo', levels:{found:0,cozy:1,door:0,guests:0,heel:0}, log:[], needs:{}, updated:0 };
 let run = null;          // session in progress (this device only)
 let dbDoc = null, writing = false, dirty = false;
 const $ = id => document.getElementById(id);
@@ -335,7 +335,7 @@ const pup = () => S.name.trim() || 'your dog';
 
 function adopt(d){
   if(!d || typeof d!=='object') return;
-  S = { name: typeof d.name==='string'? d.name : '',
+  S = { name: (typeof d.name==='string' && d.name.trim()) ? d.name : 'Leo',
         levels: Object.assign({found:0,cozy:1,door:0,guests:0,heel:0}, d.levels||{}),
         log: Array.isArray(d.log)? d.log.slice(-300) : [],
         needs: d.needs && typeof d.needs==='object'? JSON.parse(JSON.stringify(d.needs)) : {},

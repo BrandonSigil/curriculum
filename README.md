@@ -1,6 +1,6 @@
 # Poodle Training Manual
 
-An interactive training manual for a 3-year-old standard poodle. It covers four skills in short daily sessions:
+An interactive training manual for Leo, a 3-year-old standard poodle. It covers four skills in short daily sessions:
 
 - **Get cozy**: go to his bed from anywhere in the house and stay until released
 - **Quiet at the door**: a knock sends him to his bed
